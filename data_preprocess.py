@@ -40,8 +40,8 @@ def main(dataset):
         file_path = r'dataset/webtext2019zh'
 
     # output_path = r'dataset/processedData/'
-    output_path = r'/local2/wuhao/processedData/'
-
+    # output_path = r'/local2/wuhao/processedData/'
+    output_path = r'./dataset/'
     texts = []
 
     for dir_path, dir_name, files in os.walk(file_path):

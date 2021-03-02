@@ -206,7 +206,7 @@ def prepariation(pretrained_tokenizer, pretrained_config, pretrained_checkpoint,
                                          pretrained_tokenizer=pretrained_tokenizer)
 
 
-def main(dataset, order):
+def main(dataset, order,):
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
 
@@ -216,11 +216,6 @@ def main(dataset, order):
     logger.info("Setting the dataset")
     validation_data_path = r'/local2/wuhao/processedData/' + dataset + '_val'
     training_data_path = r'/local2/wuhao/processedData/' + dataset + '_' + str(order) + '_train'
-
-    logger.info("loading the checkpoints")
-    pretrained_tokenizer = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch'
-    pretrained_config = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch/config.json'
-    pretrained_checkpoint = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch/'
 
     logger.info("setting the arguments")
     parser = HfArgumentParser((TrainingArguments, ModelArgs))
@@ -249,6 +244,11 @@ def main(dataset, order):
     if not os.path.exists(model_path):
         os.mkdir(model_path)
 
+    logger.info("loading the checkpoints")
+    pretrained_tokenizer = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch'
+    pretrained_config = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch/config.json'
+    pretrained_checkpoint = r'roberta_checkpoint/RoBERTa_zh_L12_PyTorch/'
+
     logger.info("Evaluate baseline and create the model")
     # 1&2。 Evaluate baseline and create the model for only one time
     if not os.path.exists(model_path + '/pytorch_model.bin'):
@@ -256,10 +256,12 @@ def main(dataset, order):
                      model_path)
 
     logger.info("Load the model and pertrain with preprocessed dataset")
+
     # 3. Load roberta-base-4096 from disk.
     logger.info(f'Loading the model from {model_path}')
     tokenizer = BertTokenizerFast.from_pretrained(model_path)
     model = BertLongForMaskedLM.from_pretrained(model_path)
+
 
     # 4. Pretrain roberta-base-4096 for 3K steps, each step jas 2-18 tokens
     """
@@ -283,12 +285,14 @@ def main(dataset, order):
     tokenizer = BertTokenizerFast.from_pretrained(model_path)
     model = BertLongForMaskedLM.from_pretrained(model_path)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True, help='select the dataset')
     # parser.add_argument('--is_valid', type=bool, required=True, help='is Val_set or not')
     parser.add_argument('--order', type=int, required=True, help='the order of sub-dataset, ignored for valid set')
     args = parser.parse_args()
+
 
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
